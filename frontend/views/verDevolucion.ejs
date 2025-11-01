@@ -1,0 +1,68 @@
+<!-- Encabezado tipo Dashboard -->
+<div class="d-flex align-items-center justify-content-between mb-4">
+  <div>
+    <h1 class="h3 mb-1">Lista de Devoluciones</h1>
+    <p class="text-muted mb-0">Visualiza, edita o elimina devoluciones registradas</p>
+  </div>
+  <div>
+    <a href="/createDevolucion" class="btn btn-primary">
+      <i class="bi bi-plus-circle me-1"></i> Crear Devolución
+    </a>
+  </div>
+</div>
+
+<!-- Tabla dentro de tarjeta -->
+<div class="card shadow-sm">
+  <div class="card-body">
+    <div class="table-responsive">
+      <table class="table table-striped align-middle">
+        <thead class="table-light">
+          <tr>
+            <th scope="col">ID Devolución</th>
+            <th scope="col">ID Venta</th>
+            <th scope="col">ID Producto</th>
+            <th scope="col">Cantidad</th>
+            <th scope="col">Fecha</th>
+            <th scope="col">Motivo</th>
+            <th scope="col" class="text-center">Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% if (data && data.length > 0) { %>
+            <% data.forEach(devolucion => { %>
+              <tr>
+                <td><%= devolucion.IdDev %></td>
+                <td><%= devolucion.IdVenta %></td>
+                <td><%= devolucion.IdProd %></td>
+                <td><%= devolucion.Cantidad %></td>
+                <td><%= new Date(devolucion.Fecha).toLocaleDateString('es-GT') %></td>
+                <td><%= devolucion.Motivo || '—' %></td>
+                <td class="text-center">
+                  <div class="btn-group" role="group">
+                    <!-- Botón Editar -->
+                    <a href="/editDevolucion/<%= devolucion.IdDev %>" class="btn btn-sm btn-warning">
+                      <i class="fas fa-pencil-square"></i>
+                    </a>
+                    <!-- Botón Eliminar -->
+                    <form action="/deleteDevolucion/<%= devolucion.IdDev %>" method="POST" style="display:inline;">
+                      <button type="submit" class="btn btn-sm btn-danger"
+                        onclick="return confirm('¿Estás seguro que deseas eliminar esta devolución?')">
+                        <i class="fas fa-trash"></i>
+                      </button>
+                    </form>
+                  </div>
+                </td>
+              </tr>
+            <% }); %>
+          <% } else { %>
+            <tr>
+              <td colspan="7" class="text-center text-muted py-3">
+                No hay devoluciones registradas.
+              </td>
+            </tr>
+          <% } %>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,202 @@
+<!-- Encabezado tipo Dashboard -->
+<div class="d-flex align-items-center justify-content-between mb-4">
+  <div>
+    <h1 class="h3 mb-1">Editar Pago</h1>
+    <p class="text-muted mb-0">Actualiza los datos del pago seleccionado</p>
+  </div>
+  <div>
+    <a href="/verPago" class="btn btn-outline-secondary">
+      <i class="bi bi-arrow-left"></i> Volver a la lista
+    </a>
+  </div>
+</div>
+
+<!-- Formulario -->
+<div class="card shadow-sm">
+  <div class="card-body">
+    <form id="pagoForm" action="/updatePago" method="POST" novalidate>
+      <input type="hidden" name="IdPago" value="<%= pago.IdPago %>">
+
+      <div class="row g-3">
+        <div class="col-12 col-md-6">
+          <label for="IdVenta" class="form-label">Venta</label>
+          <select class="form-select" id="IdVenta" name="IdVenta" required>
+            <option value="">Selecciona una venta</option>
+            <% if (ventas && ventas.length) { %>
+              <% ventas.forEach(venta => { %>
+                <option
+                  value="<%= venta.IdVenta %>"
+                  <%= String(venta.IdVenta) === String(pago.IdVenta) ? 'selected' : '' %>>
+                  #<%= venta.IdVenta %> — Total: Q <%= Number(venta.Total).toFixed(2) %>
+                </option>
+              <% }) %>
+            <% } else { %>
+              <option disabled>No hay ventas disponibles</option>
+            <% } %>
+          </select>
+          <div class="invalid-feedback">Por favor selecciona una venta.</div>
+        </div>
+
+        <div class="col-12 col-md-6">
+          <label for="Fecha" class="form-label">Fecha y hora</label>
+          <input
+            type="datetime-local"
+            class="form-control"
+            id="Fecha"
+            name="Fecha"
+            required
+            value="<%= new Date(pago.Fecha).toISOString().slice(0, 16) %>"
+          />
+          <div class="invalid-feedback">Por favor ingresa una fecha y hora válidas.</div>
+        </div>
+
+        <div class="col-12 col-md-4">
+          <label for="FormaPago" class="form-label">Forma de Pago</label>
+          <select class="form-select" id="FormaPago" name="FormaPago" required>
+            <option value="">Selecciona una opción</option>
+            <option value="Tarjeta" <%= pago.FormaPago === 'Tarjeta' ? 'selected' : '' %>>Tarjeta</option>
+            <option value="Deposito" <%= pago.FormaPago === 'Deposito' ? 'selected' : '' %>>Depósito</option>
+            <option value="Efectivo" <%= pago.FormaPago === 'Efectivo' ? 'selected' : '' %>>Efectivo</option>
+            <option value="Transferencia" <%= pago.FormaPago === 'Transferencia' ? 'selected' : '' %>>Transferencia</option>
+          </select>
+          <div class="invalid-feedback">Por favor selecciona la forma de pago.</div>
+        </div>
+
+        <div class="col-12 col-md-4">
+          <label for="Monto" class="form-label">Monto (Q)</label>
+          <input
+            type="text"
+            inputmode="decimal"
+            class="form-control"
+            id="Monto"
+            name="Monto"
+            required
+            value="<%= Number(pago.Monto).toFixed ? Number(pago.Monto).toFixed(2) : pago.Monto %>"
+            placeholder="Ej. 250.00"
+          />
+          <div class="invalid-feedback">Por favor ingresa un monto válido.</div>
+        </div>
+
+        <div class="col-12 col-md-4">
+          <label for="IdBanco" class="form-label">Banco (si aplica)</label>
+          <select class="form-select" id="IdBanco" name="IdBanco">
+            <option value="">Sin banco</option>
+            <% if (bancos && bancos.length) { %>
+              <% bancos.forEach(banco => { %>
+                <option
+                  value="<%= banco.IdBanco %>"
+                  <%= String(banco.IdBanco) === String(pago.IdBanco) ? 'selected' : '' %>>
+                  <%= banco.Nombre %>
+                </option>
+              <% }) %>
+            <% } else { %>
+              <option disabled>No hay bancos disponibles</option>
+            <% } %>
+          </select>
+        </div>
+
+        <div class="col-12 col-md-6">
+          <label for="NumeroReferencia" class="form-label">Número de Referencia</label>
+          <input
+            type="text"
+            class="form-control"
+            id="NumeroReferencia"
+            name="NumeroReferencia"
+            maxlength="30"
+            value="<%= pago.NumeroReferencia || '' %>"
+            placeholder="Opcional, depende del método de pago"
+          />
+        </div>
+
+        <div class="col-12 col-md-6">
+          <label for="IdUsuario" class="form-label">Usuario</label>
+          <select class="form-select" id="IdUsuario" name="IdUsuario" required>
+            <option value="">Selecciona un usuario</option>
+            <% if (usuarios && usuarios.length) { %>
+              <% usuarios.forEach(usuario => { %>
+                <option
+                  value="<%= usuario.IdUsuario %>"
+                  <%= String(usuario.IdUsuario) === String(pago.IdUsuario) ? 'selected' : '' %>>
+                  <%= usuario.Nombre || ('Usuario #' + usuario.IdUsuario) %>
+                </option>
+              <% }) %>
+            <% } else { %>
+              <option disabled>No hay usuarios disponibles</option>
+            <% } %>
+          </select>
+          <div class="invalid-feedback">Por favor selecciona un usuario.</div>
+        </div>
+      </div>
+
+      <div class="d-flex gap-2 mt-4">
+        <button type="submit" class="btn btn-primary">
+          <i class="bi bi-save me-1"></i> Actualizar
+        </button>
+        <a href="/verPago" class="btn btn-secondary">Cancelar</a>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Lógica: normalizar monto y validación Bootstrap -->
+<script>
+  (function () {
+    'use strict';
+    const form = document.getElementById('pagoForm');
+    const monto = document.getElementById('Monto');
+    const formaPago = document.getElementById('FormaPago');
+    const idBanco = document.getElementById('IdBanco');
+    const numRef = document.getElementById('NumeroReferencia');
+
+    // Limpia y normaliza montos: solo dígitos y un punto decimal
+    function normalizarMonto(v) {
+      const s = String(v).replace(',', '.').replace(/[^0-9.]/g, '');
+      const parts = s.split('.');
+      if (parts.length > 2) {
+        return parts[0] + '.' + parts.slice(1).join('');
+      }
+      return s;
+    }
+
+    function requiereBancoYRef(method) {
+      return method === 'Tarjeta' || method === 'Deposito' || method === 'Transferencia';
+    }
+
+    monto.addEventListener('input', () => {
+      monto.value = normalizarMonto(monto.value);
+    });
+
+    // Reglas condicionales para banco y referencia según método de pago
+    function actualizarRequisitos() {
+      const method = formaPago.value;
+      const obligatorios = requiereBancoYRef(method);
+      idBanco.required = obligatorios;
+      numRef.required = obligatorios;
+      // Tip visual
+      numRef.placeholder = obligatorios ? 'Obligatorio para ' + method : 'Opcional';
+    }
+
+    formaPago.addEventListener('change', actualizarRequisitos);
+
+    form.addEventListener('submit', function (event) {
+      // Formato final del monto a 2 decimales
+      const val = parseFloat(monto.value);
+      if (!isFinite(val) || val < 0) {
+        event.preventDefault();
+        event.stopPropagation();
+        monto.focus();
+      } else {
+        monto.value = val.toFixed(2);
+      }
+
+      if (!form.checkValidity()) {
+        event.preventDefault();
+        event.stopPropagation();
+      }
+      form.classList.add('was-validated');
+    }, false);
+
+    // Inicial
+    actualizarRequisitos();
+  })();
+</script>

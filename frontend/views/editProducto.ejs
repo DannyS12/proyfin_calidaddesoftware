@@ -1,0 +1,216 @@
+<!-- Encabezado tipo Dashboard -->
+<div class="d-flex align-items-center justify-content-between mb-4">
+  <div>
+    <h1 class="h3 mb-1">Editar Producto</h1>
+    <p class="text-muted mb-0">Actualiza la información del producto</p>
+  </div>
+  <div>
+    <a href="/verProducto" class="btn btn-outline-secondary">
+      <i class="bi bi-arrow-left"></i> Volver a la lista
+    </a>
+  </div>
+</div>
+
+<!-- Formulario -->
+<div class="card shadow-sm">
+  <div class="card-body">
+    <form id="productoForm" action="/updateProducto" method="POST" novalidate>
+      <input type="hidden" name="IdProd" value="<%= producto.IdProd %>">
+
+      <div class="row g-3">
+        <div class="col-12 col-md-6">
+          <label for="IdCategoria" class="form-label">Categoría</label>
+          <select id="IdCategoria" name="IdCategoria" class="form-select" required>
+            <option value="">Selecciona una categoría</option>
+            <% if (categorias && categorias.length) { %>
+              <% categorias.forEach(categoria => { %>
+                <option
+                  value="<%= categoria.IdCategoria %>"
+                  <%= String(producto.IdCategoria) === String(categoria.IdCategoria) ? 'selected' : '' %>>
+                  <%= categoria.Nombre %>
+                </option>
+              <% }) %>
+            <% } else { %>
+              <option disabled>No hay categorías disponibles</option>
+            <% } %>
+          </select>
+          <div class="invalid-feedback">Selecciona una categoría.</div>
+        </div>
+
+        <div class="col-12 col-md-6">
+          <label for="CodigoProducto" class="form-label">Código de Producto</label>
+          <input
+            type="text"
+            class="form-control"
+            id="CodigoProducto"
+            name="CodigoProducto"
+            required
+            minlength="3"
+            maxlength="30"
+            pattern="^[A-Za-z0-9\-\_]+$"
+            value="<%= producto.CodigoProducto %>"
+            placeholder="Ej. PROD-001"
+          />
+          <div class="invalid-feedback">Código válido (3-30, letras, números, guion y guion bajo).</div>
+        </div>
+
+        <div class="col-12 col-md-6">
+          <label for="Nombre" class="form-label">Nombre</label>
+          <input
+            type="text"
+            class="form-control"
+            id="Nombre"
+            name="Nombre"
+            required
+            minlength="3"
+            maxlength="80"
+            value="<%= producto.Nombre %>"
+          />
+          <div class="invalid-feedback">Ingresa un nombre válido (mínimo 3 caracteres).</div>
+        </div>
+
+        <div class="col-12 col-md-6">
+          <label for="NumeroSerie" class="form-label">Número de Serie</label>
+          <input
+            type="text"
+            class="form-control"
+            id="NumeroSerie"
+            name="NumeroSerie"
+            maxlength="60"
+            value="<%= producto.NumeroSerie %>"
+            placeholder="Si aplica"
+          />
+        </div>
+
+        <div class="col-12">
+          <label for="Descripcion" class="form-label">Descripción</label>
+          <input
+            type="text"
+            class="form-control"
+            id="Descripcion"
+            name="Descripcion"
+            required
+            minlength="5"
+            maxlength="200"
+            value="<%= producto.Descripcion %>"
+          />
+          <div class="invalid-feedback">Ingresa una descripción (mínimo 5 caracteres).</div>
+        </div>
+
+        <div class="col-12 col-md-4">
+          <label for="Precio" class="form-label">Precio (Q)</label>
+          <input
+            type="text"
+            inputmode="decimal"
+            class="form-control"
+            id="Precio"
+            name="Precio"
+            required
+            value="<%= Number(producto.Precio).toFixed ? Number(producto.Precio).toFixed(2) : producto.Precio %>"
+            placeholder="0.00"
+          />
+          <div class="invalid-feedback">Ingresa un precio válido.</div>
+        </div>
+
+        <div class="col-12 col-md-4">
+          <label for="Impuestos" class="form-label">Impuestos (%)</label>
+          <input
+            type="text"
+            inputmode="decimal"
+            class="form-control"
+            id="Impuestos"
+            name="Impuestos"
+            required
+            value="<%= Number(producto.Impuestos).toFixed ? Number(producto.Impuestos).toFixed(2) : producto.Impuestos %>"
+            placeholder="Ej. 12.00"
+          />
+          <div class="invalid-feedback">Ingresa un porcentaje válido (0-100).</div>
+        </div>
+
+        <div class="col-12 col-md-4">
+          <label for="Stock" class="form-label">Stock</label>
+          <input
+            type="text"
+            inputmode="numeric"
+            class="form-control"
+            id="Stock"
+            name="Stock"
+            required
+            value="<%= producto.Stock %>"
+            placeholder="0"
+          />
+          <div class="invalid-feedback">Ingresa un stock válido (entero >= 0).</div>
+        </div>
+      </div>
+
+      <div class="d-flex gap-2 mt-4">
+        <button type="submit" class="btn btn-success">
+          <i class="bi bi-save me-1"></i> Actualizar
+        </button>
+        <a href="/verProducto" class="btn btn-secondary">Cancelar</a>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Normalización y validación -->
+<script>
+  (function () {
+    'use strict';
+    const form = document.getElementById('productoForm');
+    const precio = document.getElementById('Precio');
+    const impuestos = document.getElementById('Impuestos');
+    const stock = document.getElementById('Stock');
+
+    function normalizeDecimal(v) {
+      const s = String(v).replace(',', '.').replace(/[^0-9.]/g, '');
+      const parts = s.split('.');
+      if (parts.length > 2) {
+        return parts[0] + '.' + parts.slice(1).join('');
+      }
+      return s;
+    }
+    function normalizeInt(v) {
+      return String(v).replace(/\D/g, '');
+    }
+
+    precio.addEventListener('input', () => {
+      precio.value = normalizeDecimal(precio.value);
+    });
+    impuestos.addEventListener('input', () => {
+      impuestos.value = normalizeDecimal(impuestos.value);
+    });
+    stock.addEventListener('input', () => {
+      stock.value = normalizeInt(stock.value);
+    });
+
+    form.addEventListener('submit', function (event) {
+      // Validaciones adicionales
+      const p = parseFloat(precio.value);
+      const imp = parseFloat(impuestos.value);
+      const st = parseInt(stock.value, 10);
+
+      if (!isFinite(p) || p < 0) {
+        event.preventDefault(); event.stopPropagation(); precio.focus();
+      } else {
+        precio.value = p.toFixed(2);
+      }
+
+      if (!isFinite(imp) || imp < 0 || imp > 100) {
+        event.preventDefault(); event.stopPropagation(); impuestos.focus();
+      } else {
+        impuestos.value = imp.toFixed(2);
+      }
+
+      if (!Number.isInteger(st) || st < 0) {
+        event.preventDefault(); event.stopPropagation(); stock.focus();
+      }
+
+      if (!form.checkValidity()) {
+        event.preventDefault();
+        event.stopPropagation();
+      }
+      form.classList.add('was-validated');
+    }, false);
+  })();
+</script>

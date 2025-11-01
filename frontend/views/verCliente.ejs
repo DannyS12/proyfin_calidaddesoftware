@@ -1,0 +1,73 @@
+<!-- Encabezado tipo Dashboard -->
+<div class="d-flex align-items-center justify-content-between mb-4">
+  <div>
+    <h1 class="h3 mb-1">Clientes</h1>
+    <p class="text-muted mb-0">Lista completa de clientes registrados</p>
+  </div>
+  <div>
+    <a href="/createCliente" class="btn btn-primary">
+      <i class="bi bi-person-plus me-1"></i> Crear Cliente
+    </a>
+  </div>
+</div>
+
+<!-- Tabla -->
+<div class="card shadow-sm">
+  <div class="card-body">
+    <div class="table-responsive">
+      <table class="table table-hover align-middle mb-0">
+        <thead class="table-light">
+          <tr>
+            <th>ID</th>
+            <th>Nombre</th>
+            <th>Dirección</th>
+            <th>Teléfono</th>
+            <th>Correo</th>
+            <th>Sexo</th>
+            <th>NIT</th>
+            <th>CUI</th>
+            <th>Seguro Médico</th>
+            <th>Póliza</th>
+            <th class="text-center">Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% if (data && data.length > 0) { %>
+            <% data.forEach(cliente => { %>
+              <tr>
+                <td><%= cliente.IdCliente %></td>
+                <td><%= cliente.Nombre %></td>
+                <td><%= cliente.Direccion %></td>
+                <td><%= cliente.Telefono %></td>
+                <td><%= cliente.Email %></td>
+                <td><%= cliente.Sexo %></td>
+                <td><%= cliente.NIT %></td>
+                <td><%= cliente.CUI %></td>
+                <td><%= cliente.SeguroMedico %></td>
+                <td><%= cliente.NumeroPoliza %></td>
+                <td class="text-center">
+                  <a href="/editCliente/<%= cliente.IdCliente %>" class="btn btn-warning btn-sm">
+                    <i class="bi bi-pencil"></i> Editar
+                  </a>
+
+                  <form action="/deleteCliente/<%= cliente.IdCliente %>" method="POST" class="d-inline">
+                    <button type="submit" class="btn btn-danger btn-sm"
+                            onclick="return confirm('¿Estás seguro de que deseas eliminar este cliente?')">
+                      <i class="bi bi-trash"></i> Eliminar
+                    </button>
+                  </form>
+                </td>
+              </tr>
+            <% }) %>
+          <% } else { %>
+            <tr>
+              <td colspan="11" class="text-center text-muted py-4">
+                No hay clientes registrados.
+              </td>
+            </tr>
+          <% } %>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

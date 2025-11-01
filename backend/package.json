@@ -1,0 +1,39 @@
+{
+  "name": "crud-backend",
+  "version": "1.0.0",
+  "description": "Sistema CRUD Backend API con Express",
+  "main": "app.js",
+  "scripts": {
+    "start": "node app.js",
+    "dev": "nodemon app.js",
+    "test": "jest",
+    "test:login": "jest tests/auth.test.js",
+    "test:bancos": "jest tests/bancos.test.js",
+    "test:categorias": "jest tests/categorias.test.js",
+    "test:devoluciones": "jest tests/devoluciones.test.js",
+    "test:usuarios": "jest tests/usuarios.test.js"
+  },
+  "keywords": [],
+  "author": "Dannito",
+  "license": "ISC",
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "body-parser": "^1.20.3",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
+    "ejs": "^3.1.10",
+    "express": "^4.21.1",
+    "express-session": "^1.18.0",
+    "html-pdf": "^3.0.1",
+    "moment": "^2.30.1",
+    "mysql": "^2.18.1",
+    "nodemon": "^2.0.7",
+    "pdfkit": "^0.15.0",
+    "pdfmake": "^0.2.14"
+  },
+  "devDependencies": {
+    "jest": "^30.0.0-rc.1",
+    "supertest": "^7.1.4",
+    "supertest-session": "^5.0.1"
+  }
+}

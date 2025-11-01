@@ -1,0 +1,54 @@
+<!-- Encabezado tipo Dashboard -->
+<div class="d-flex align-items-center justify-content-between mb-4">
+  <div>
+    <h1 class="h3 mb-1">Categorías de Productos</h1>
+    <p class="text-muted mb-0">Lista de todas las categorías disponibles</p>
+  </div>
+  <div>
+    <a href="/createCatProd" class="btn btn-primary">
+      <i class="bi bi-plus-circle me-1"></i> Crear Categoría
+    </a>
+  </div>
+</div>
+
+<!-- Tabla -->
+<div class="card shadow-sm">
+  <div class="card-body">
+    <div class="table-responsive">
+      <table class="table table-hover align-middle mb-0">
+        <thead class="table-light">
+          <tr>
+            <th style="width:10%">ID</th>
+            <th>Nombre</th>
+            <th style="width:25%" class="text-center">Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% if (data && data.length > 0) { %>
+            <% data.forEach(categoria => { %>
+              <tr>
+                <td><%= categoria.IdCategoria %></td>
+                <td><%= categoria.Nombre %></td>
+                <td class="text-center">
+                  <a href="/editCatProd/<%= categoria.IdCategoria %>" class="btn btn-warning btn-sm">
+                    <i class="bi bi-pencil"></i> Editar
+                  </a>
+                  <form action="/deleteCatProd/<%= categoria.IdCategoria %>" method="POST" class="d-inline">
+                    <button type="submit" class="btn btn-danger btn-sm"
+                            onclick="return confirm('¿Estás seguro de que deseas eliminar esta categoría de productos?')">
+                      <i class="bi bi-trash"></i> Eliminar
+                    </button>
+                  </form>
+                </td>
+              </tr>
+            <% }) %>
+          <% } else { %>
+            <tr>
+              <td colspan="3" class="text-center text-muted py-4">No hay categorías registradas.</td>
+            </tr>
+          <% } %>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

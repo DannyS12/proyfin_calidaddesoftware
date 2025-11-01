@@ -1,0 +1,217 @@
+<!-- Encabezado tipo Dashboard -->
+<div class="d-flex align-items-center justify-content-between mb-4">
+  <div>
+    <h1 class="h3 mb-1">Editar Usuario</h1>
+    <p class="text-muted mb-0">Actualiza la información del usuario</p>
+  </div>
+  <div>
+    <a href="/verUsuario" class="btn btn-outline-secondary">
+      <i class="bi bi-arrow-left"></i> Volver a la lista
+    </a>
+  </div>
+</div>
+
+<!-- Formulario -->
+<div class="card shadow-sm">
+  <div class="card-body">
+    <form id="usuarioForm" action="/updateUsuario" method="POST" novalidate>
+      <input type="hidden" name="IdUsuario" value="<%= usuario.IdUsuario %>" />
+
+      <div class="row g-3">
+        <div class="col-12 col-md-6">
+          <label for="NombreUsuario" class="form-label">Nombre de Usuario</label>
+          <input
+            type="text"
+            class="form-control"
+            id="NombreUsuario"
+            name="NombreUsuario"
+            required
+            minlength="3"
+            maxlength="30"
+            pattern="^[A-Za-z0-9_]+$"
+            value="<%= usuario.NombreUsuario %>"
+            autocomplete="off"
+            placeholder="Ej. jperez_01"
+          />
+          <div class="invalid-feedback">3-30 caracteres, solo letras, números y guion bajo.</div>
+        </div>
+
+        <div class="col-12 col-md-6">
+          <label for="Rol" class="form-label">Rol</label>
+          <select id="Rol" name="Rol" class="form-select" required>
+            <option value="" disabled>Selecciona un rol</option>
+            <option value="Administrador" <%= usuario.Rol === 'Administrador' ? 'selected' : '' %>>Administrador</option>
+            <option value="Vendedor" <%= usuario.Rol === 'Vendedor' ? 'selected' : '' %>>Vendedor</option>
+            <option value="Cajero" <%= usuario.Rol === 'Cajero' ? 'selected' : '' %>>Cajero</option>
+            <option value="Inventario" <%= usuario.Rol === 'Inventario' ? 'selected' : '' %>>Inventario</option>
+          </select>
+          <div class="invalid-feedback">Selecciona un rol válido.</div>
+        </div>
+
+        <div class="col-12 col-md-6">
+          <label for="Nombre" class="form-label">Nombre</label>
+          <input
+            type="text"
+            class="form-control"
+            id="Nombre"
+            name="Nombre"
+            required
+            minlength="3"
+            maxlength="50"
+            pattern="^[A-Za-zÁÉÍÓÚáéíóúÑñ\s]+$"
+            value="<%= usuario.Nombre %>"
+            autocomplete="off"
+            placeholder="Ej. Juan"
+          />
+          <div class="invalid-feedback">Solo letras y espacios, mínimo 3 caracteres.</div>
+        </div>
+
+        <div class="col-12 col-md-6">
+          <label for="Apellido" class="form-label">Apellido</label>
+          <input
+            type="text"
+            class="form-control"
+            id="Apellido"
+            name="Apellido"
+            required
+            minlength="3"
+            maxlength="50"
+            pattern="^[A-Za-zÁÉÍÓÚáéíóúÑñ\s]+$"
+            value="<%= usuario.Apellido %>"
+            autocomplete="off"
+            placeholder="Ej. Pérez"
+          />
+          <div class="invalid-feedback">Solo letras y espacios, mínimo 3 caracteres.</div>
+        </div>
+
+        <div class="col-12 col-md-6">
+          <label for="Email" class="form-label">Email</label>
+          <input
+            type="email"
+            class="form-control"
+            id="Email"
+            name="Email"
+            required
+            maxlength="80"
+            value="<%= usuario.Email %>"
+            placeholder="correo@dominio.com"
+          />
+          <div class="invalid-feedback">Ingresa un correo válido.</div>
+        </div>
+
+        <div class="col-12 col-md-6">
+          <label for="Telefono" class="form-label">Teléfono</label>
+          <input
+            type="text"
+            class="form-control"
+            id="Telefono"
+            name="Telefono"
+            required
+            pattern="^\d{8}$"
+            maxlength="8"
+            inputmode="numeric"
+            value="<%= usuario.Telefono %>"
+            placeholder="8 dígitos"
+          />
+          <div class="invalid-feedback">Teléfono de 8 dígitos.</div>
+        </div>
+
+        <!-- Cambio de contraseña (opcional) -->
+        <div class="col-12">
+          <div class="form-check form-switch mb-1">
+            <input class="form-check-input" type="checkbox" id="togglePass" />
+            <label class="form-check-label" for="togglePass">Cambiar contraseña</label>
+          </div>
+          <small class="text-muted d-block mb-2">Por seguridad, no mostramos la contraseña actual. Marca la opción si deseas definir una nueva.</small>
+        </div>
+
+        <div class="col-12 col-md-6 d-none" id="wrapPass">
+          <label for="Contrasena" class="form-label">Nueva contraseña</label>
+          <input
+            type="password"
+            class="form-control"
+            id="Contrasena"
+            name="Contrasena"
+            minlength="6"
+            maxlength="50"
+            autocomplete="new-password"
+            placeholder="Mínimo 6 caracteres"
+          />
+          <div class="invalid-feedback">La contraseña debe tener entre 6 y 50 caracteres.</div>
+        </div>
+
+        <div class="col-12 col-md-6 d-none" id="wrapPass2">
+          <label for="Contrasena2" class="form-label">Confirmar contraseña</label>
+          <input
+            type="password"
+            class="form-control"
+            id="Contrasena2"
+            name="Contrasena2"
+            minlength="6"
+            maxlength="50"
+            autocomplete="new-password"
+            placeholder="Repite la nueva contraseña"
+          />
+          <div class="invalid-feedback">Las contraseñas deben coincidir.</div>
+        </div>
+      </div>
+
+      <div class="d-flex gap-2 mt-4">
+        <button type="submit" class="btn btn-primary">
+          <i class="bi bi-save me-1"></i> Actualizar
+        </button>
+        <a href="/verUsuario" class="btn btn-secondary">Cancelar</a>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Validación y filtros -->
+<script>
+  (function () {
+    'use strict';
+    const form = document.getElementById('usuarioForm');
+    const tel = document.getElementById('Telefono');
+    const togglePass = document.getElementById('togglePass');
+    const wrapPass = document.getElementById('wrapPass');
+    const wrapPass2 = document.getElementById('wrapPass2');
+    const pass = document.getElementById('Contrasena');
+    const pass2 = document.getElementById('Contrasena2');
+
+    // Solo números en teléfono
+    tel.addEventListener('input', () => {
+      tel.value = tel.value.replace(/\D/g, '');
+    });
+
+    // Mostrar/ocultar cambio de contraseña
+    togglePass.addEventListener('change', () => {
+      const on = togglePass.checked;
+      wrapPass.classList.toggle('d-none', !on);
+      wrapPass2.classList.toggle('d-none', !on);
+      pass.required = on;
+      pass2.required = on;
+      if (!on) { pass.value = ''; pass2.value = ''; pass.setCustomValidity(''); pass2.setCustomValidity(''); }
+    });
+
+    // Validar que ambas contraseñas coincidan
+    function validarCoincidencia() {
+      if (pass.value && pass2.value && pass.value !== pass2.value) {
+        pass2.setCustomValidity('Las contraseñas no coinciden');
+      } else {
+        pass2.setCustomValidity('');
+      }
+    }
+    pass.addEventListener('input', validarCoincidencia);
+    pass2.addEventListener('input', validarCoincidencia);
+
+    // Validación Bootstrap
+    form.addEventListener('submit', function (event) {
+      validarCoincidencia();
+      if (!form.checkValidity()) {
+        event.preventDefault();
+        event.stopPropagation();
+      }
+      form.classList.add('was-validated');
+    }, false);
+  })();
+</script>

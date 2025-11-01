@@ -1,0 +1,161 @@
+<!-- Encabezado -->
+<div class="d-flex align-items-center justify-content-between mb-4">
+  <div>
+    <h1 class="h3 mb-1">Dashboard</h1>
+    <p class="text-muted mb-0">Resumen general del sistema</p>
+  </div>
+  <div>
+    <span class="badge bg-primary"><%= new Date().toLocaleDateString('es-GT', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }) %></span>
+  </div>
+</div>
+
+<!-- Tarjetas de estadísticas -->
+<div class="row g-3 mb-4">
+  <!-- Ventas de Hoy -->
+  <div class="col-12 col-sm-6 col-lg-3">
+    <div class="card shadow-sm border-0">
+      <div class="card-body">
+        <div class="d-flex align-items-center">
+          <div class="flex-shrink-0">
+            <div class="bg-primary bg-opacity-10 text-primary rounded p-3">
+              <i class="bi bi-cash-coin fs-4"></i>
+            </div>
+          </div>
+          <div class="flex-grow-1 ms-3">
+            <h6 class="text-muted mb-1 small">Ventas Hoy</h6>
+            <h4 class="mb-0">Q <%= Number(ventasHoy.monto).toFixed(2) %></h4>
+            <small class="text-muted"><%= ventasHoy.total %> ventas</small>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Ventas del Mes -->
+  <div class="col-12 col-sm-6 col-lg-3">
+    <div class="card shadow-sm border-0">
+      <div class="card-body">
+        <div class="d-flex align-items-center">
+          <div class="flex-shrink-0">
+            <div class="bg-success bg-opacity-10 text-success rounded p-3">
+              <i class="bi bi-graph-up-arrow fs-4"></i>
+            </div>
+          </div>
+          <div class="flex-grow-1 ms-3">
+            <h6 class="text-muted mb-1 small">Ventas del Mes</h6>
+            <h4 class="mb-0">Q <%= Number(ventasMes.monto).toFixed(2) %></h4>
+            <small class="text-muted"><%= ventasMes.total %> ventas</small>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Stock Bajo -->
+  <div class="col-12 col-sm-6 col-lg-3">
+    <div class="card shadow-sm border-0">
+      <div class="card-body">
+        <div class="d-flex align-items-center">
+          <div class="flex-shrink-0">
+            <div class="bg-warning bg-opacity-10 text-warning rounded p-3">
+              <i class="bi bi-exclamation-triangle fs-4"></i>
+            </div>
+          </div>
+          <div class="flex-grow-1 ms-3">
+            <h6 class="text-muted mb-1 small">Stock Bajo</h6>
+            <h4 class="mb-0"><%= stockBajo %></h4>
+            <small class="text-muted">productos</small>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Total Clientes -->
+  <div class="col-12 col-sm-6 col-lg-3">
+    <div class="card shadow-sm border-0">
+      <div class="card-body">
+        <div class="d-flex align-items-center">
+          <div class="flex-shrink-0">
+            <div class="bg-info bg-opacity-10 text-info rounded p-3">
+              <i class="bi bi-people fs-4"></i>
+            </div>
+          </div>
+          <div class="flex-grow-1 ms-3">
+            <h6 class="text-muted mb-1 small">Clientes</h6>
+            <h4 class="mb-0"><%= totalClientes %></h4>
+            <small class="text-muted">registrados</small>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Gráficos y tablas -->
+<div class="row g-3">
+  <!-- Últimas Ventas -->
+  <div class="col-12 col-lg-7">
+    <div class="card shadow-sm">
+      <div class="card-header bg-white">
+        <h5 class="mb-0">Últimas Ventas</h5>
+      </div>
+      <div class="card-body">
+        <div class="table-responsive">
+          <table class="table table-sm align-middle">
+            <thead class="table-light">
+              <tr>
+                <th>ID</th>
+                <th>Fecha</th>
+                <th>Cliente</th>
+                <th>Forma Pago</th>
+                <th class="text-end">Total</th>
+              </tr>
+            </thead>
+            <tbody>
+              <% if (ultimasVentas && ultimasVentas.length) { %>
+                <% ultimasVentas.forEach(v => { %>
+                  <tr>
+                    <td><%= v.IdVenta %></td>
+                    <td><%= new Date(v.Fecha).toLocaleDateString('es-GT') %></td>
+                    <td><%= v.ClienteNombre || '—' %></td>
+                    <td><span class="badge bg-secondary"><%= v.FormaPago %></span></td>
+                    <td class="text-end fw-semibold">Q <%= Number(v.Total).toFixed(2) %></td>
+                  </tr>
+                <% }) %>
+              <% } else { %>
+                <tr><td colspan="5" class="text-center text-muted">No hay ventas recientes</td></tr>
+              <% } %>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Top Productos -->
+  <div class="col-12 col-lg-5">
+    <div class="card shadow-sm">
+      <div class="card-header bg-white">
+        <h5 class="mb-0">Productos Más Vendidos</h5>
+      </div>
+      <div class="card-body">
+        <% if (topProductos && topProductos.length) { %>
+          <% topProductos.forEach((p, i) => { %>
+            <div class="d-flex align-items-center mb-3">
+              <div class="flex-shrink-0">
+                <span class="badge bg-primary rounded-circle" style="width:30px;height:30px;line-height:20px;"><%= i+1 %></span>
+              </div>
+              <div class="flex-grow-1 ms-3">
+                <div class="fw-semibold"><%= p.Nombre %></div>
+                <small class="text-muted"><%= p.TotalVendido %> unidades vendidas</small>
+              </div>
+            </div>
+          <% }) %>
+        <% } else { %>
+          <p class="text-muted text-center">No hay datos disponibles</p>
+        <% } %>
+      </div>
+    </div>
+  </div>
+</div>

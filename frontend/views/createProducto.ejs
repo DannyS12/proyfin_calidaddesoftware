@@ -1,0 +1,191 @@
+<!-- Encabezado tipo Dashboard -->
+<div class="d-flex align-items-center justify-content-between mb-4">
+  <div>
+    <h1 class="h3 mb-1">Crear Producto</h1>
+    <p class="text-muted mb-0">Registra un nuevo producto en el catálogo</p>
+  </div>
+  <div>
+    <a href="/verProducto" class="btn btn-outline-secondary">
+      <i class="bi bi-arrow-left"></i> Volver a la lista
+    </a>
+  </div>
+</div>
+
+<!-- Formulario -->
+<div class="card shadow-sm">
+  <div class="card-body">
+    <form id="productoForm" action="/createProducto" method="POST" novalidate>
+      <div class="row g-3">
+        <!-- Categoría -->
+        <div class="col-12 col-md-6">
+          <label for="IdCategoria" class="form-label">Categoría de Producto</label>
+          <select id="IdCategoria" name="IdCategoria" class="form-select" required>
+            <option value="" disabled selected>Selecciona una categoría</option>
+            <% if (categorias && categorias.length) { %>
+              <% categorias.forEach(categoria => { %>
+                <option value="<%= categoria.IdCategoria %>"><%= categoria.Nombre %></option>
+              <% }) %>
+            <% } else { %>
+              <option disabled>No hay categorías disponibles</option>
+            <% } %>
+          </select>
+          <div class="invalid-feedback">Por favor selecciona una categoría.</div>
+        </div>
+
+        <!-- Código -->
+        <div class="col-12 col-md-6">
+          <label for="CodigoProducto" class="form-label">Código Producto</label>
+          <input
+            type="text"
+            class="form-control"
+            id="CodigoProducto"
+            name="CodigoProducto"
+            required
+            pattern="^[A-Za-z0-9\-]{3,20}$"
+            placeholder="Ej. ABC-123"
+          />
+          <div class="invalid-feedback">Código válido: 3-20 caracteres alfanuméricos o guiones.</div>
+        </div>
+
+        <!-- Nombre -->
+        <div class="col-12 col-md-6">
+          <label for="Nombre" class="form-label">Nombre</label>
+          <input
+            type="text"
+            class="form-control"
+            id="Nombre"
+            name="Nombre"
+            required
+            minlength="3"
+            maxlength="50"
+            pattern="[A-Za-zÁÉÍÓÚáéíóúÑñ0-9\s]+"
+            placeholder="Ej. Audífonos Bluetooth"
+          />
+          <div class="invalid-feedback">Nombre válido: 3-50 caracteres, letras, números y espacios.</div>
+        </div>
+
+        <!-- Descripción -->
+        <div class="col-12 col-md-6">
+          <label for="Descripcion" class="form-label">Descripción</label>
+          <input
+            type="text"
+            class="form-control"
+            id="Descripcion"
+            name="Descripcion"
+            required
+            minlength="5"
+            maxlength="100"
+            placeholder="Breve descripción del producto"
+          />
+          <div class="invalid-feedback">Descripción válida: 5-100 caracteres.</div>
+        </div>
+
+        <!-- Precio -->
+        <div class="col-12 col-md-4">
+          <label for="Precio" class="form-label">Precio (Q)</label>
+          <input
+            type="text"
+            class="form-control"
+            id="Precio"
+            name="Precio"
+            required
+            pattern="^\d+(\.\d{1,2})?$"
+            placeholder="0.00"
+          />
+          <div class="invalid-feedback">Precio válido: número positivo, hasta 2 decimales.</div>
+        </div>
+
+        <!-- Impuestos -->
+        <div class="col-12 col-md-4">
+          <label for="Impuestos" class="form-label">Impuestos (Q)</label>
+          <input
+            type="text"
+            class="form-control"
+            id="Impuestos"
+            name="Impuestos"
+            required
+            pattern="^\d+(\.\d{1,2})?$"
+            placeholder="0.00"
+          />
+          <div class="invalid-feedback">Impuestos válidos: número positivo, hasta 2 decimales.</div>
+        </div>
+
+        <!-- Número de Serie -->
+        <div class="col-12 col-md-4">
+          <label for="NumeroSerie" class="form-label">Número de Serie</label>
+          <input
+            type="text"
+            class="form-control"
+            id="NumeroSerie"
+            name="NumeroSerie"
+            required
+            pattern="^[A-Za-z0-9\-]{3,30}$"
+            placeholder="Ej. SN-4567-XYZ"
+          />
+          <div class="invalid-feedback">Número de serie válido: 3-30 caracteres alfanuméricos o guiones.</div>
+        </div>
+
+        <!-- Stock -->
+        <div class="col-12 col-md-4">
+          <label for="Stock" class="form-label">Stock</label>
+          <input
+            type="text"
+            class="form-control"
+            id="Stock"
+            name="Stock"
+            required
+            pattern="^\d+$"
+            inputmode="numeric"
+            placeholder="Entero positivo"
+          />
+          <div class="invalid-feedback">Stock válido: número entero positivo.</div>
+        </div>
+      </div>
+
+      <div class="d-flex gap-2 mt-4">
+        <button type="submit" class="btn btn-success">
+          <i class="bi bi-save me-1"></i> Guardar
+        </button>
+        <a href="/verProducto" class="btn btn-secondary">Cancelar</a>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Validación Bootstrap y filtros de entrada -->
+<script>
+  (function () {
+    'use strict';
+    const form = document.getElementById('productoForm');
+    const precio = document.getElementById('Precio');
+    const impuestos = document.getElementById('Impuestos');
+    const stock = document.getElementById('Stock');
+
+    // Validación Bootstrap
+    form.addEventListener('submit', function (event) {
+      if (!form.checkValidity()) {
+        event.preventDefault();
+        event.stopPropagation();
+      }
+      form.classList.add('was-validated');
+    });
+
+    // Filtro para montos: solo números y un punto
+    function filterMoneyInput(el) {
+      el.addEventListener('input', () => {
+        el.value = el.value.replace(/[^0-9.]/g, '');
+        // Evitar más de un punto decimal
+        if ((el.value.match(/\./g) || []).length > 1) {
+          el.value = el.value.replace(/\.+$/, '');
+        }
+      });
+    }
+    filterMoneyInput(precio);
+    filterMoneyInput(impuestos);
+
+    // Filtro para enteros positivos
+    stock.addEventListener('input', () => {
+      stock.value = stock.value.replace(/\D/g, '');
+    });
+  })();
+</script>

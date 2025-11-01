@@ -1,0 +1,347 @@
+<!-- Encabezado tipo Dashboard -->
+<div class="d-flex align-items-center justify-content-between mb-4">
+  <div>
+    <h1 class="h3 mb-1">Registrar Venta</h1>
+    <p class="text-muted mb-0">Completa los datos para registrar una nueva venta</p>
+  </div>
+  <div>
+    <a href="/verVenta" class="btn btn-outline-secondary">
+      <i class="bi bi-arrow-left"></i> Volver a la lista
+    </a>
+  </div>
+</div>
+
+<!-- Formulario -->
+<div class="card shadow-sm">
+  <div class="card-body">
+    <form id="ventaForm" action="/guardarVenta" method="POST" novalidate>
+      <!-- Datos principales -->
+      <div class="row g-3 mb-2">
+        <div class="col-md-4">
+          <label for="usuario" class="form-label">Usuario</label>
+          <select id="usuario" name="IdUsuario" class="form-select" required>
+            <option value="">Seleccionar Usuario</option>
+            <% if (usuarios && usuarios.length) { %>
+              <% usuarios.forEach(usuario => { %>
+                <option value="<%= usuario.IdUsuario %>"><%= usuario.Nombre %></option>
+              <% }) %>
+            <% } else { %>
+              <option disabled>No hay usuarios disponibles</option>
+            <% } %>
+          </select>
+          <div class="invalid-feedback">Por favor selecciona un usuario.</div>
+        </div>
+
+        <div class="col-md-4">
+          <label for="cliente" class="form-label">Cliente</label>
+          <select id="cliente" name="IdCliente" class="form-select" required>
+            <option value="">Seleccionar Cliente</option>
+            <% if (clientes && clientes.length) { %>
+              <% clientes.forEach(cliente => { %>
+                <option value="<%= cliente.IdCliente %>"><%= cliente.Nombre %></option>
+              <% }) %>
+            <% } else { %>
+              <option disabled>No hay clientes disponibles</option>
+            <% } %>
+          </select>
+          <div class="invalid-feedback">Por favor selecciona un cliente.</div>
+        </div>
+
+        <div class="col-md-4">
+          <label for="formaPago" class="form-label">Forma de Pago</label>
+          <select id="formaPago" name="FormaPago" class="form-select" required>
+            <option value="">Seleccionar Forma de Pago</option>
+            <option value="Efectivo">Efectivo</option>
+            <option value="Tarjeta">Tarjeta</option>
+            <option value="Transferencia">Transferencia</option>
+            <option value="Credito">Crédito</option>
+          </select>
+          <div class="invalid-feedback">Por favor selecciona una forma de pago.</div>
+        </div>
+      </div>
+
+      <div class="row g-3 mb-3">
+        <div class="col-md-4">
+          <label for="anticipo" class="form-label">Anticipo (Q)</label>
+          <input type="number" id="anticipo" name="Anticipo" class="form-control" min="0" step="0.01" value="0" />
+        </div>
+        <div class="col-md-4">
+          <label for="descuento" class="form-label">Descuento (%)</label>
+          <input type="number" id="descuento" name="Descuento" class="form-control" min="0" max="100" step="0.01" value="0" />
+        </div>
+        <div class="col-md-4 d-flex align-items-center">
+          <div class="form-check mt-4">
+            <input type="checkbox" id="cuentaCorriente" name="CuentaCorriente" class="form-check-input" />
+            <label class="form-check-label" for="cuentaCorriente">Usar Cuenta Corriente</label>
+          </div>
+        </div>
+      </div>
+
+      <hr>
+
+      <!-- Selector de productos -->
+      <div class="row g-3 align-items-end mb-3">
+        <div class="col-md-5">
+          <label for="producto" class="form-label">Producto</label>
+          <select id="producto" class="form-select" required>
+            <option value="">Seleccionar Producto</option>
+            <% if (productos && productos.length) { %>
+              <% productos.forEach(producto => { %>
+                <option
+                  value="<%= producto.IdProd %>"
+                  data-precio="<%= producto.Precio %>"
+                  data-serie="<%= producto.NumeroSerie %>"
+                >
+                  <%= producto.Nombre %> — Q <%= Number(producto.Precio).toFixed(2) %>
+                </option>
+              <% }) %>
+            <% } else { %>
+              <option disabled>No hay productos disponibles</option>
+            <% } %>
+          </select>
+          <div class="invalid-feedback">Por favor selecciona un producto.</div>
+        </div>
+
+        <div class="col-md-2">
+          <label for="cantidad" class="form-label">Cantidad</label>
+          <input type="number" id="cantidad" class="form-control" min="1" value="1" required />
+          <div class="invalid-feedback">Cantidad válida mayor que 0.</div>
+        </div>
+
+        <div class="col-md-3">
+          <label for="numeroSerie" class="form-label">Número de Serie</label>
+          <input type="text" id="numeroSerie" class="form-control" readonly />
+        </div>
+
+        <div class="col-md-2 d-grid">
+          <button type="button" id="btnAgregar" class="btn btn-primary">
+            <i class="bi bi-plus-circle me-1"></i> Agregar
+          </button>
+        </div>
+      </div>
+
+      <!-- Tabla de productos -->
+      <div class="table-responsive mb-3">
+        <table class="table table-bordered table-striped align-middle">
+          <thead class="table-light">
+            <tr>
+              <th>Producto</th>
+              <th style="width: 110px;">Cantidad</th>
+              <th>Número de Serie</th>
+              <th style="width: 150px;">Precio Unitario (Q)</th>
+              <th style="width: 150px;">Subtotal (Q)</th>
+              <th style="width: 80px;" class="text-center">Acciones</th>
+            </tr>
+          </thead>
+          <tbody id="productosSeleccionados"></tbody>
+        </table>
+      </div>
+
+      <!-- Totales -->
+      <div class="row g-3 text-end">
+        <div class="col-md-3 offset-md-6 fw-semibold">Subtotal: Q. </div>
+        <div class="col-md-3" id="subtotal">0.00</div>
+
+        <div class="col-md-3 offset-md-6 fw-semibold">Descuento aplicado: Q. </div>
+        <div class="col-md-3" id="descuentoAplicado">0.00</div>
+
+        <div class="col-md-3 offset-md-6 fw-semibold">Anticipo: Q. </div>
+        <div class="col-md-3" id="anticipoDado">0.00</div>
+
+        <div class="col-md-3 offset-md-6 fw-bold fs-5">Total: Q. </div>
+        <div class="col-md-3 fw-bold fs-5" id="total">0.00</div>
+      </div>
+
+      <!-- Campos ocultos para enviar detalles de productos -->
+      <div id="detalleInputs"></div>
+
+      <div class="d-flex gap-2 mt-4">
+        <button type="submit" class="btn btn-success btn-lg">
+          <i class="bi bi-cart-check me-1"></i> Registrar Venta
+        </button>
+        <a href="/verVenta" class="btn btn-secondary btn-lg">Cancelar</a>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Lógica de la venta -->
+<script>
+  (function () {
+    'use strict';
+
+    const form = document.getElementById('ventaForm');
+    const productoSel = document.getElementById('producto');
+    const cantidadInput = document.getElementById('cantidad');
+    const numeroSerieInput = document.getElementById('numeroSerie');
+    const btnAgregar = document.getElementById('btnAgregar');
+    const tbody = document.getElementById('productosSeleccionados');
+
+    const subtotalEl = document.getElementById('subtotal');
+    const descuentoAplicadoEl = document.getElementById('descuentoAplicado');
+    const anticipoDadoEl = document.getElementById('anticipoDado');
+    const totalEl = document.getElementById('total');
+
+    const descuentoInput = document.getElementById('descuento');
+    const anticipoInput = document.getElementById('anticipo');
+    const detalleInputs = document.getElementById('detalleInputs');
+
+    // Utilitarios
+    const toNum = (v) => {
+      const n = parseFloat(v);
+      return Number.isFinite(n) ? n : 0;
+    };
+    const fmt = (n) => n.toFixed(2);
+
+    function actualizarNumeroSerie() {
+      const id = productoSel.value;
+      numeroSerieInput.value = '';
+      if (!id) return;
+
+      const opt = productoSel.querySelector(`option[value="${id}"]`);
+      const serie = opt?.getAttribute('data-serie');
+      numeroSerieInput.value = serie || 'No hay número de serie disponible';
+    }
+
+    function agregarProducto() {
+      const id = productoSel.value;
+      const opt = id ? productoSel.querySelector(`option[value="${id}"]`) : null;
+      const nombre = opt?.textContent || '';
+      const precio = toNum(opt?.getAttribute('data-precio'));
+      const cantidad = parseInt(cantidadInput.value, 10);
+      const serie = numeroSerieInput.value;
+
+      if (!id) {
+        alert('Por favor, selecciona un producto.');
+        return;
+      }
+      if (!Number.isFinite(cantidad) || cantidad <= 0) {
+        alert('Por favor, ingresa una cantidad válida (mayor que 0).');
+        cantidadInput.focus();
+        return;
+      }
+      if (!serie || serie === 'No hay número de serie disponible') {
+        alert('Número de serie no disponible para el producto seleccionado.');
+        return;
+      }
+
+      const subtotal = precio * cantidad;
+
+      // Fila visual
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td>${nombre}</td>
+        <td class="text-end">${cantidad}</td>
+        <td>${serie}</td>
+        <td class="text-end">${fmt(precio)}</td>
+        <td class="text-end subtotal-cell">${fmt(subtotal)}</td>
+        <td class="text-center">
+          <button type="button" class="btn btn-sm btn-outline-danger btn-remove" title="Eliminar">
+            <i class="fas fa-trash"></i>
+          </button>
+        </td>
+      `;
+      tbody.appendChild(tr);
+
+      // Inputs ocultos para enviar al backend (arrays)
+      // Usamos múltiples sets sincronizados por índice
+      const idx = detalleInputs.children.length / 4; // 4 inputs por item
+      detalleInputs.insertAdjacentHTML('beforeend', `
+        <input type="hidden" name="detalle[${idx}][IdProd]" value="${id}">
+        <input type="hidden" name="detalle[${idx}][Cantidad]" value="${cantidad}">
+        <input type="hidden" name="detalle[${idx}][NumeroSerie]" value="${serie}">
+        <input type="hidden" name="detalle[${idx}][Precio]" value="${fmt(precio)}">
+      `);
+
+      actualizarTotal();
+
+      // Reset controles
+      cantidadInput.value = 1;
+      numeroSerieInput.value = '';
+      productoSel.value = '';
+    }
+
+    function actualizarTotal() {
+      let subtotal = 0;
+      tbody.querySelectorAll('tr').forEach(tr => {
+        const cell = tr.querySelector('.subtotal-cell');
+        subtotal += toNum(cell?.textContent);
+      });
+
+      const descuentoPct = toNum(desembolso(descuentoInput.value));
+      const anticipo = toNum(desembolso(anticipoInput.value));
+      // Límite de rango para descuento
+      const dPct = Math.max(0, Math.min(descuentoPct, 100));
+
+      const descuentoMonto = subtotal * (dPct / 100);
+      const subtotalConDescuento = Math.max(0, subtotal - descuentoMonto);
+      const total = Math.max(0, subtotalConDescuento - anticipo);
+
+      subtotalEl.textContent = fmt(subtotal);
+      descuentoAplicadoEl.textContent = fmt(descuentoMonto);
+      anticipoDadoEl.textContent = fmt(anticipo);
+      totalEl.textContent = fmt(total);
+    }
+
+    // Limpiar entradas monetarias de caracteres no válidos
+    function desembolso(v) {
+      // Reemplaza comas por puntos y elimina todo lo que no sea dígito o punto
+      const s = String(v).replace(',', '.').replace(/[^0-9.]/g, '');
+      // Evitar múltiples puntos
+      const parts = s.split('.');
+      if (parts.length > 2) {
+        return parts[0] + '.' + parts.slice(1).join('');
+      }
+      return s;
+    }
+
+    // Eventos
+    productoSel.addEventListener('change', actualizarNumeroSerie);
+    btnAgregar.addEventListener('click', agregarProducto);
+    descuentoInput.addEventListener('input', () => {
+      descuentoInput.value = desembolso(descuentoInput.value);
+      actualizarTotal();
+    });
+    anticipoInput.addEventListener('input', () => {
+      anticipoInput.value = desembolso(anticipoInput.value);
+      actualizarTotal();
+    });
+
+    // Eliminar fila
+    tbody.addEventListener('click', (e) => {
+      if (e.target.closest('.btn-remove')) {
+        const row = e.target.closest('tr');
+        const index = Array.from(tbody.children).indexOf(row);
+        row.remove();
+
+        // Eliminar el set de 4 inputs ocultos correspondiente
+        const start = index * 4;
+        for (let i = 0; i < 4; i++) {
+          if (detalleInputs.children[start]) detalleInputs.children[start].remove();
+        }
+
+        actualizarTotal();
+      }
+    });
+
+    // Validación Bootstrap + al menos un producto
+    form.addEventListener('submit', function (event) {
+      if (tbody.rows.length === 0) {
+        alert('Por favor, agrega al menos un producto a la venta.');
+        event.preventDefault();
+        event.stopPropagation();
+        return;
+      }
+
+      if (!form.checkValidity()) {
+        event.preventDefault();
+        event.stopPropagation();
+      }
+      form.classList.add('was-validated');
+    });
+
+    // Inicial
+    actualizarNumeroSerie();
+    actualizarTotal();
+  })();
+</script>

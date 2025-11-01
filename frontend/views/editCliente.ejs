@@ -1,0 +1,178 @@
+<!-- Encabezado tipo Dashboard -->
+<div class="d-flex align-items-center justify-content-between mb-4">
+  <div>
+    <h1 class="h3 mb-1">Editar Cliente</h1>
+    <p class="text-muted mb-0">Modifica los datos del cliente seleccionado</p>
+  </div>
+  <div>
+    <a href="/verCliente" class="btn btn-outline-secondary">
+      <i class="bi bi-arrow-left"></i> Volver a la lista
+    </a>
+  </div>
+</div>
+
+<!-- Formulario -->
+<div class="card shadow-sm">
+  <div class="card-body">
+    <form id="clienteForm" action="/updateCliente" method="POST" novalidate>
+      <input type="hidden" name="Id" value="<%= cliente.IdCliente %>">
+
+      <div class="row g-3">
+        <div class="col-12 col-md-6">
+          <label for="Nombre" class="form-label">Nombre</label>
+          <input
+            type="text"
+            class="form-control"
+            id="Nombre"
+            name="Nombre"
+            required
+            minlength="3"
+            maxlength="50"
+            pattern="[A-Za-zÁÉÍÓÚáéíóúÑñ\s]+"
+            value="<%= cliente.Nombre %>"
+          />
+          <div class="invalid-feedback">Por favor ingresa un nombre válido (solo letras, mínimo 3 caracteres).</div>
+        </div>
+
+        <div class="col-12 col-md-6">
+          <label for="Direccion" class="form-label">Dirección</label>
+          <input
+            type="text"
+            class="form-control"
+            id="Direccion"
+            name="Direccion"
+            required
+            minlength="5"
+            maxlength="100"
+            value="<%= cliente.Direccion %>"
+          />
+          <div class="invalid-feedback">Por favor ingresa una dirección válida (mínimo 5 caracteres).</div>
+        </div>
+
+        <div class="col-12 col-md-4">
+          <label for="Telefono" class="form-label">Teléfono</label>
+          <input
+            type="text"
+            class="form-control"
+            id="Telefono"
+            name="Telefono"
+            required
+            pattern="^\d{8}$"
+            maxlength="8"
+            value="<%= cliente.Telefono %>"
+          />
+          <div class="invalid-feedback">Por favor ingresa un teléfono válido (exactamente 8 dígitos).</div>
+        </div>
+
+        <div class="col-12 col-md-4">
+          <label for="Email" class="form-label">Correo Electrónico</label>
+          <input
+            type="email"
+            class="form-control"
+            id="Email"
+            name="Email"
+            value="<%= cliente.Email %>"
+          />
+          <div class="invalid-feedback">Por favor ingresa un correo electrónico válido.</div>
+        </div>
+
+        <div class="col-12 col-md-4">
+          <label for="Sexo" class="form-label">Sexo</label>
+          <select id="Sexo" name="Sexo" class="form-select" required>
+            <option value="" disabled>Selecciona una opción</option>
+            <option value="H" <%= cliente.Sexo === 'H' ? 'selected' : '' %>>Hombre</option>
+            <option value="M" <%= cliente.Sexo === 'M' ? 'selected' : '' %>>Mujer</option>
+          </select>
+          <div class="invalid-feedback">Por favor selecciona el sexo.</div>
+        </div>
+
+        <div class="col-12 col-md-4">
+          <label for="NIT" class="form-label">NIT</label>
+          <input
+            type="text"
+            class="form-control"
+            id="NIT"
+            name="NIT"
+            required
+            pattern="^\d{7,15}$"
+            value="<%= cliente.NIT %>"
+          />
+          <div class="invalid-feedback">Por favor ingresa un NIT válido (entre 7 y 15 dígitos).</div>
+        </div>
+
+        <div class="col-12 col-md-4">
+          <label for="CUI" class="form-label">CUI</label>
+          <input
+            type="text"
+            class="form-control"
+            id="CUI"
+            name="CUI"
+            required
+            pattern="^\d{13}$"
+            value="<%= cliente.CUI %>"
+          />
+          <div class="invalid-feedback">Por favor ingresa un CUI válido (exactamente 13 dígitos).</div>
+        </div>
+
+        <div class="col-12 col-md-4">
+          <label for="SeguroMedico" class="form-label">Seguro Médico</label>
+          <input
+            type="text"
+            class="form-control"
+            id="SeguroMedico"
+            name="SeguroMedico"
+            maxlength="50"
+            value="<%= cliente.SeguroMedico %>"
+          />
+        </div>
+
+        <div class="col-12 col-md-6">
+          <label for="NumeroPoliza" class="form-label">Número de Póliza</label>
+          <input
+            type="text"
+            class="form-control"
+            id="NumeroPoliza"
+            name="NumeroPoliza"
+            required
+            pattern="^[A-Za-z0-9\-]{5,20}$"
+            value="<%= cliente.NumeroPoliza %>"
+          />
+          <div class="invalid-feedback">Por favor ingresa un número de póliza válido (5-20 alfanuméricos).</div>
+        </div>
+      </div>
+
+      <div class="d-flex gap-2 mt-4">
+        <button type="submit" class="btn btn-primary">
+          <i class="bi bi-save me-1"></i> Actualizar
+        </button>
+        <a href="/verCliente" class="btn btn-secondary">Cancelar</a>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Validación Bootstrap -->
+<script>
+  (function() {
+    'use strict';
+    const form = document.getElementById('clienteForm');
+    const tel = document.getElementById('Telefono');
+    const nit = document.getElementById('NIT');
+    const cui = document.getElementById('CUI');
+
+    // Filtrar solo números para campos numéricos
+    [tel, nit, cui].forEach(el => {
+      el.addEventListener('input', () => {
+        el.value = el.value.replace(/\D/g, '');
+      });
+    });
+
+    form.addEventListener('submit', function (event) {
+      if (!form.checkValidity()) {
+        event.preventDefault();
+        event.stopPropagation();
+      }
+      form.classList.add('was-validated');
+    }, false);
+  })();
+</script>

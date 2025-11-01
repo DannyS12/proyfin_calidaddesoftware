@@ -1,0 +1,156 @@
+<!-- Encabezado tipo Dashboard -->
+<div class="d-flex align-items-center justify-content-between mb-4">
+  <div>
+    <h1 class="h3 mb-1">Editar Kardex</h1>
+    <p class="text-muted mb-0">Actualiza los movimientos del inventario para el producto seleccionado</p>
+  </div>
+  <div>
+    <a href="/verKardex" class="btn btn-outline-secondary">
+      <i class="bi bi-arrow-left"></i> Volver a la lista
+    </a>
+  </div>
+</div>
+
+<!-- Formulario -->
+<div class="card shadow-sm">
+  <div class="card-body">
+    <form id="kardexForm" action="/updateKardex/<%= kardex.Id %>" method="POST" novalidate>
+      <input type="hidden" name="Id" value="<%= kardex.Id %>" />
+
+      <div class="row g-3">
+        <div class="col-12 col-md-6">
+          <label for="IdProd" class="form-label">Producto</label>
+          <select name="IdProd" id="IdProd" class="form-select" onchange="actualizarCantidadInicial()" required>
+            <% if (productos && productos.length) { %>
+              <% productos.forEach(producto => { %>
+                <option
+                  value="<%= producto.IdProd %>"
+                  data-stock="<%= producto.Stock %>"
+                  <%= kardex.IdProd === producto.IdProd ? 'selected' : '' %>>
+                  <%= producto.Nombre %>
+                </option>
+              <% }) %>
+            <% } else { %>
+              <option value="" disabled selected>No hay productos disponibles</option>
+            <% } %>
+          </select>
+          <div class="invalid-feedback">Por favor selecciona un producto.</div>
+        </div>
+
+        <div class="col-12 col-md-6">
+          <label for="CantidadInicial" class="form-label">Cantidad Inicial</label>
+          <input
+            type="number"
+            class="form-control"
+            id="CantidadInicial"
+            name="CantidadInicial"
+            value="<%= kardex.CantidadInicial %>"
+            readonly
+            required
+            min="0"
+          />
+          <div class="invalid-feedback">Cantidad inicial inválida.</div>
+        </div>
+
+        <div class="col-12 col-md-4">
+          <label for="CantidadVendida" class="form-label">Cantidad Vendida</label>
+          <input
+            type="number"
+            class="form-control"
+            id="CantidadVendida"
+            name="CantidadVendida"
+            min="0"
+            step="1"
+            value="<%= kardex.CantidadVendida %>"
+          />
+          <div class="invalid-feedback">Cantidad vendida inválida.</div>
+        </div>
+
+        <div class="col-12 col-md-4">
+          <label for="CantidadRecibida" class="form-label">Cantidad Recibida</label>
+          <input
+            type="number"
+            class="form-control"
+            id="CantidadRecibida"
+            name="CantidadRecibida"
+            min="0"
+            step="1"
+            value="<%= kardex.CantidadRecibida %>"
+          />
+          <div class="invalid-feedback">Cantidad recibida inválida.</div>
+        </div>
+
+        <div class="col-12 col-md-4">
+          <label for="CantidadExistente" class="form-label">Cantidad Existente</label>
+          <input
+            type="number"
+            class="form-control"
+            id="CantidadExistente"
+            name="CantidadExistente"
+            readonly
+            value="<%= kardex.CantidadExistente || (kardex.CantidadInicial - kardex.CantidadVendida + kardex.CantidadRecibida) %>"
+          />
+        </div>
+      </div>
+
+      <div class="d-flex gap-2 mt-4">
+        <button type="submit" class="btn btn-success">
+          <i class="bi bi-save me-1"></i> Actualizar
+        </button>
+        <a href="/verKardex" class="btn btn-secondary">Cancelar</a>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Lógica: Actualizar cantidades y validación -->
+<script>
+  function actualizarCantidadInicial() {
+    const selectProducto = document.getElementById("IdProd");
+    const campoCantidadInicial = document.getElementById("CantidadInicial");
+    const stockSeleccionado =
+      selectProducto.options[selectProducto.selectedIndex]?.getAttribute("data-stock");
+
+    campoCantidadInicial.value = stockSeleccionado || 0;
+    actualizarCantidadExistente();
+  }
+
+  function actualizarCantidadExistente() {
+    const ini = parseInt(document.getElementById("CantidadInicial").value) || 0;
+    const vend = parseInt(document.getElementById("CantidadVendida").value) || 0;
+    const rec = parseInt(document.getElementById("CantidadRecibida").value) || 0;
+    document.getElementById("CantidadExistente").value = ini - vend + rec;
+  }
+
+  // Escuchas y validación al cargar
+  (function () {
+    "use strict";
+    const form = document.getElementById("kardexForm");
+    const venta = document.getElementById("CantidadVendida");
+    const recibida = document.getElementById("CantidadRecibida");
+
+    window.addEventListener("load", () => {
+      actualizarCantidadInicial();
+      actualizarCantidadExistente();
+    });
+
+    [venta, recibida].forEach((el) => {
+      el.addEventListener("input", () => {
+        el.value = el.value.replace(/\D/g, "");
+        actualizarCantidadExistente();
+      });
+    });
+
+    form.addEventListener(
+      "submit",
+      function (event) {
+        if (!form.checkValidity()) {
+          event.preventDefault();
+          event.stopPropagation();
+        }
+        form.classList.add("was-validated");
+      },
+      false
+    );
+  })();
+</script>

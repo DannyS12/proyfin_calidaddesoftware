@@ -1,0 +1,226 @@
+/* public/css/app.css */
+.table thead th {
+    white-space: nowrap;
+}
+
+.card {
+    border-radius: 12px;
+}
+
+:root {
+    --primary-color: #2c3e50;
+    --secondary-color: #3498db;
+    --accent-color: #e74c3c;
+    --light-color: #ecf0f1;
+    --dark-color: #34495e;
+    --success-color: #2ecc71;
+    --text-dark: #2c3e50;
+    --text-light: #6c757d;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #f8f9fa;
+}
+
+/* NAVBAR ESTILOS ACTUALIZADOS */
+.navbar {
+    background: #ffffff !important;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.navbar-brand {
+    font-weight: 700;
+    color: var(--primary-color) !important;
+    font-size: 1.4rem;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.navbar-brand i {
+    color: var(--secondary-color);
+}
+
+.nav-link {
+    color: var(--text-dark) !important;
+    font-size: 0.8rem;
+    font-weight: 400;
+    padding: 0.5rem 1rem !important;
+    border-radius: 6px;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.nav-link:hover,
+.nav-link:focus {
+    color: var(--secondary-color) !important;
+    background-color: rgba(52, 152, 219, 0.1);
+    transform: translateY(-1px);
+}
+
+.nav-link.active {
+    color: var(--secondary-color) !important;
+    background-color: rgba(52, 152, 219, 0.15);
+}
+
+.dropdown-menu {
+    background-color: white;
+    border: none;
+    border-radius: 8px;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.15);
+    padding: 0.5rem 0;
+    border: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.dropdown-item {
+    padding: 0.6rem 1.2rem;
+    color: var(--text-dark);
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-weight: 400;
+}
+
+.dropdown-item:hover {
+    background-color: rgba(52, 152, 219, 0.1);
+    color: var(--secondary-color);
+    padding-left: 1.5rem;
+}
+
+.dropdown-toggle::after {
+    margin-left: 5px;
+    color: var(--text-light);
+}
+
+.navbar-toggler {
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    padding: 0.25rem 0.5rem;
+}
+
+.navbar-toggler:focus {
+    box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.25);
+}
+
+.navbar-toggler-icon {
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3e%3cpath stroke='rgba%2844, 62, 80, 0.8%29' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e");
+}
+
+/* Información de usuario */
+.user-info {
+    color: var(--text-dark);
+    font-size: 0.9rem;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.user-info strong {
+    color: var(--primary-color);
+}
+
+.user-info i {
+    color: var(--secondary-color);
+}
+
+.btn-logout {
+    background-color: transparent;
+    border: 1px solid var(--text-light);
+    color: var(--text-dark);
+    padding: 0.4rem 0.8rem;
+    border-radius: 6px;
+    transition: all 0.3s ease;
+    font-size: 0.9rem;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-weight: 500;
+}
+
+.btn-logout:hover {
+    background-color: var(--accent-color);
+    color: white;
+    border-color: var(--accent-color);
+    transform: translateY(-1px);
+}
+
+.nav-icon {
+    width: 18px;
+    text-align: center;
+    color: var(--secondary-color);
+}
+
+/* Estilos para elementos activos del dropdown */
+.nav-item.dropdown.show .nav-link {
+    color: var(--secondary-color) !important;
+    background-color: rgba(52, 152, 219, 0.1);
+}
+
+/* Responsive */
+@media (max-width: 991.98px) {
+    .navbar-collapse {
+        padding-top: 1rem;
+    }
+
+    .nav-link {
+        padding: 0.75rem 1rem !important;
+    }
+
+    .dropdown-menu {
+        margin-left: 0;
+        width: 100%;
+        box-shadow: none;
+        border: 1px solid rgba(0, 0, 0, 0.05);
+    }
+
+    .user-info-container {
+        margin-top: 1rem;
+        padding-top: 1rem;
+        border-top: 1px solid rgba(0, 0, 0, 0.1);
+        flex-direction: column;
+        align-items: flex-start !important;
+        gap: 1rem;
+    }
+    
+    .btn-logout {
+        align-self: flex-start;
+    }
+}
+
+/* Mejoras adicionales para el layout */
+.main-content {
+    min-height: calc(100vh - 200px);
+}
+
+.footer {
+    background: #ffffff;
+    border-top: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+/* Efectos hover mejorados */
+.nav-item {
+    margin: 0 2px;
+}
+
+.dropdown-item i {
+    width: 16px;
+    text-align: center;
+    color: var(--text-light);
+}
+
+.dropdown-item:hover i {
+    color: var(--secondary-color);
+}
+
+/* Badges para contadores (opcional) */
+.nav-badge {
+    background: var(--accent-color);
+    color: white;
+    border-radius: 10px;
+    padding: 0.1rem 0.4rem;
+    font-size: 0.7rem;
+    margin-left: 5px;
+}
