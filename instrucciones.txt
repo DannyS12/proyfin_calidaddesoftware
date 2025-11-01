@@ -1,0 +1,6 @@
+ v20.17.0
+
+ cd backend
+ npm start  (ingrsar al login)
+
+ 
